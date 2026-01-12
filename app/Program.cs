@@ -13,7 +13,8 @@ List<WeatherBot> bots = configReader.GetBotsFromConfiguration();
 var DataManager = new WeatherDataReceiver();
 foreach (var bot in bots)
 {
-    DataManager.WeatherDataReceived += bot.OnWeatherDataReceived;
+    if (bot.IsEnabled())
+        DataManager.WeatherDataReceived += bot.OnWeatherDataReceived;
 }
 
 // read weather data
