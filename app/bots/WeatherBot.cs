@@ -23,4 +23,9 @@ public abstract class WeatherBot(ILogger logger)
     {
         if (IsActivationConditionTrue(data)) Activate();
     }
+
+    public void SubscribeToWeatherData(IWeatherDataReceiver dataManager)
+    {
+        if (Enabled) dataManager.WeatherDataReceived += OnWeatherDataReceived;
+    }
 }

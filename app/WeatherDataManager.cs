@@ -1,21 +1,21 @@
+using app.IOAbstractions;
 using app.parsing;
 
 namespace app;
 
-class WeatherDataReceiver
-{    
+public class WeatherDataReceiver(Parser parser, IInputReader reader, ILogger logger) : IWeatherDataReceiver
+{
     public event Action<WeatherData>? WeatherDataReceived;
 
     public void ReadFromUser()
     {
-        string? userInput = Console.ReadLine();
-        if (userInput is null) return;
-        var data = Parser.TryToParseAllFormats<WeatherData>(userInput);
-        if (data is null)
+        string? userInput = reader.ReadLine();
+        Result<WeatherData> data = parser.TryToParse<WeatherData>(userInput);
+        if (data.IsFailure)
         {
-            Console.WriteLine($"was not able to parse the input: {userInput}");
+            logger.WriteLine($"Parsing failed with error: \n   {data.Error}");
             return;
         }
-        WeatherDataReceived?.Invoke(data);
+        WeatherDataReceived?.Invoke(data.Value);
     }
 }
