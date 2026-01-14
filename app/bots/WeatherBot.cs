@@ -1,21 +1,21 @@
 // See https://aka.ms/new-console-template for more information
+using app.IOAbstractions;
+
 namespace app.bots;
 
-abstract class WeatherBot
+public abstract class WeatherBot(ILogger logger)
 {
-    protected string BotName;
+    protected abstract string BotName {get;}
     public required bool Enabled {get; init;}
     public required string Message {get; init;}
+    private ILogger _logger = logger;
 
-    protected WeatherBot()
-    {
-        BotName = GetType().Name;
-    }
+    protected WeatherBot() : this(new Logger()) {}
     protected virtual bool IsActivationConditionTrue(WeatherData data) => false;
     void Activate()
     {
-        Console.WriteLine($"{BotName} activated!");
-        Console.WriteLine($"{BotName}: {Message}");
+        _logger.WriteLine($"{BotName} activated!");
+        _logger.WriteLine($"{BotName}: {Message}");
     }
     public bool IsEnabled() => Enabled;
 
