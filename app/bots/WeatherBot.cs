@@ -11,7 +11,8 @@ public abstract class WeatherBot(ILogger logger)
     private ILogger _logger = logger;
 
     protected WeatherBot() : this(new Logger()) {}
-    protected virtual bool IsActivationConditionTrue(WeatherData data) => false;
+    protected abstract bool IsActivationConditionTrue(WeatherData data);
+    public void SetLogger(ILogger newLogger) => _logger = newLogger;
     void Activate()
     {
         _logger.WriteLine($"{BotName} activated!");
