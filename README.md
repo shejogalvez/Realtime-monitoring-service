@@ -1,3 +1,4 @@
+[![build and test](https://github.com/shejogalvez/Realtime-monitoring-service/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/shejogalvez/Realtime-monitoring-service/actions/workflows/build-and-test.yml)
 # 11. Exercise: Build Real-time weather monitoring and reporting service
 
 ## **General Task Description:**
@@ -78,5 +79,3 @@ Interns need to implement functionality to read this configuration file at the s
 ## **Additional Notes:**
 
 The complexity of this task involves understanding and applying the Observer and Strategy design patterns, handling file input/output operations, and data manipulation for multiple formats (JSON, XML). This task simulates real-world scenarios where applications need to react to real-time data and perform different actions based on the received data and the given configuration. The application should be designed in such a way that adding new types of bots or weather data formats should not require significant changes to the existing code.
-
-[![build and test](https://github.com/shejogalvez/Realtime-monitoring-service/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/shejogalvez/Realtime-monitoring-service/actions/workflows/build-and-test.yml)
