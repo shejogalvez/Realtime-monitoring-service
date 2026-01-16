@@ -1,6 +1,6 @@
+using System.Runtime.CompilerServices;
 using app.IOAbstractions;
 using app.parsing;
-using FluentAssertions;
 using Moq;
 using Xunit.Abstractions;
 
@@ -9,15 +9,20 @@ public class IntegrationTest(ITestOutputHelper output)
 {
     private readonly Mock<ILogger> mockLogger = new();
     private readonly Mock<IInputReader> mockReader = new();
+
+    private static string GetThisFileDirectory([CallerFilePath] string? path = null)
+    {
+        return Path.GetDirectoryName(path) ?? "";
+    }
     [Fact]
     public void HappyPath()
     {
-        var dir = Directory.GetCurrentDirectory();
+        var dir = GetThisFileDirectory();
         output.WriteLine(dir);
         mockReader.SetupSequence(x => x.ReadLine())
         .Returns("""{"Location": "Test Name", "Temperature": 32, "Humidity": 80}""")
         .Returns("exit");
-        var configPath = "../../../TestConfiguration.json";
+        var configPath = Path.Combine(dir, "Testconfiguration.json");
         string Message = "Wow, it's a scorcher test out there!";
 
         Program.Run([configPath], new OmniParser(), mockLogger.Object, mockReader.Object, new JsonFileDeserializer());
