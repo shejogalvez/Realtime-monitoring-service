@@ -6,10 +6,13 @@ using app.IOAbstractions;
 
 public class Program
 {
-    public static void Run(string ConfigurationFilePath, Parser parser, ILogger logger, IInputReader reader)
+    public static void Run(string[] args, IParser parser, ILogger logger, IInputReader reader, IJsonFileDeserializer deserializer)
     {
+        // obtain filepath as command line argument or use default
+        string ConfigurationFilePath = args.ElementAtOrDefault(0) ?? "configuration.json";
+
         // initialize weather bots from configuration file
-        var configReader = new ConfigurationReader(ConfigurationFilePath);
+        var configReader = new ConfigurationReader(ConfigurationFilePath, logger, deserializer);
         List<WeatherBot> bots = configReader.GetBotsFromConfiguration();
 
         // subscribe bots to incoming weather data
@@ -32,12 +35,10 @@ public class Program
         var parser = new OmniParser(); 
         var logger = new Logger(); 
         var reader = new InputReader(); 
-
-        // obtain filepath as command line argument or use default
-        string ConfigurationFilePath = args.ElementAtOrDefault(0) ?? "configuration.json";
+        var deserializer = new JsonFileDeserializer();
 
         // Run Program
-        Run(ConfigurationFilePath, parser, logger, reader);
+        Run(args, parser, logger, reader, deserializer);
     }
 }
 

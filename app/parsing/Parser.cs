@@ -1,6 +1,6 @@
 namespace app.parsing;
 
-public abstract class Parser
+public abstract class Parser : IParser
 {
     public Result<T> TryToParse<T>(string? input) where T : notnull
     {

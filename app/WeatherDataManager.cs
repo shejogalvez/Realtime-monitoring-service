@@ -3,7 +3,7 @@ using app.parsing;
 
 namespace app;
 
-public class WeatherDataReceiver(Parser parser, IInputReader reader, ILogger logger) : IWeatherDataReceiver
+public class WeatherDataReceiver(IParser parser, IInputReader reader, ILogger logger) : IWeatherDataReceiver
 {
     public event Action<WeatherData>? WeatherDataReceived;
 
