@@ -4,28 +4,41 @@ using app;
 using app.parsing;
 using app.IOAbstractions;
 
-// Create Dependencies object
-var parser = new OmniParser(); 
-var logger = new Logger(); 
-var reader = new InputReader(); 
-
-// obtain filepath as command line argument or use default
-string ConfigurationFilePath = args.ElementAtOrDefault(0) ?? "configuration.json";
-
-// initialize weather bots from configuration file
-var configReader = new ConfigurationReader(ConfigurationFilePath);
-List<WeatherBot> bots = configReader.GetBotsFromConfiguration();
-
-// subscribe bots to incoming weather data
-var DataManager = new WeatherDataReceiver(parser, reader, logger);
-foreach (var bot in bots)
+public class Program
 {
-    bot.SubscribeToWeatherData(DataManager);
+    public static void Run(string ConfigurationFilePath, Parser parser, ILogger logger, IInputReader reader)
+    {
+        // initialize weather bots from configuration file
+        var configReader = new ConfigurationReader(ConfigurationFilePath);
+        List<WeatherBot> bots = configReader.GetBotsFromConfiguration();
+
+        // subscribe bots to incoming weather data
+        var DataManager = new WeatherDataReceiver(parser, reader, logger);
+        foreach (var bot in bots)
+        {
+            bot.SubscribeToWeatherData(DataManager);
+        }
+
+        // read weather data
+        while (true)
+        {
+            logger.WriteLine("\ninput weather data: ");
+            DataManager.ReadFromUser();
+        }
+    }
+
+    public static void Main(string[] args) {
+        // Create Dependencies object
+        var parser = new OmniParser(); 
+        var logger = new Logger(); 
+        var reader = new InputReader(); 
+
+        // obtain filepath as command line argument or use default
+        string ConfigurationFilePath = args.ElementAtOrDefault(0) ?? "configuration.json";
+
+        // Run Program
+        Run(ConfigurationFilePath, parser, logger, reader);
+    }
 }
 
-// read weather data
-while (true)
-{
-    logger.WriteLine("\ninput weather data: ");
-    DataManager.ReadFromUser();
-}
+
