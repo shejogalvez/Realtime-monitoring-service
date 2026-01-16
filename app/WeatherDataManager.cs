@@ -7,15 +7,15 @@ public class WeatherDataReceiver(Parser parser, IInputReader reader, ILogger log
 {
     public event Action<WeatherData>? WeatherDataReceived;
 
-    public void ReadFromUser()
+    public bool ReadFromUser()
     {
         string? userInput = reader.ReadLine();
+        if (userInput == "exit") return false;
         Result<WeatherData> data = parser.TryToParse<WeatherData>(userInput);
-        if (data.IsFailure)
-        {
+        if (data.IsFailure) 
             logger.WriteLine($"Parsing failed with error: \n   {data.Error}");
-            return;
-        }
-        WeatherDataReceived?.Invoke(data.Value);
+        else
+            WeatherDataReceived?.Invoke(data.Value);
+        return true;
     }
 }

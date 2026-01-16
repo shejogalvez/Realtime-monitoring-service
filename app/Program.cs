@@ -20,11 +20,11 @@ public class Program
         }
 
         // read weather data
-        while (true)
+        do
         {
             logger.WriteLine("\ninput weather data: ");
-            DataManager.ReadFromUser();
-        }
+        } 
+        while (DataManager.ReadFromUser());
     }
 
     public static void Main(string[] args) {

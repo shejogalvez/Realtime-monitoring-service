@@ -3,5 +3,5 @@ public interface IWeatherDataReceiver
 {
     event Action<WeatherData>? WeatherDataReceived;
 
-    void ReadFromUser();
+    bool ReadFromUser();
 }
