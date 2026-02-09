@@ -1,8 +1,11 @@
-// See https://aka.ms/new-console-template for more information
 using System.Reflection;
 using System.Text.Json;
 using app.bots;
-class ConfigurationReader(string ConfigurationFilePath)
+using app.IOAbstractions;
+
+namespace app;
+
+public class ConfigurationReader(string ConfigurationFilePath, ILogger logger, IJsonFileDeserializer deserializer)
 {
     private readonly static Lazy<IEnumerable<Type>> botTypes = new (GetBotTypes);
     private static JsonSerializerOptions JsonOptions {get; set;} = new ()
@@ -16,15 +19,19 @@ class ConfigurationReader(string ConfigurationFilePath)
         .Where(type => type.IsAssignableTo(typeof(WeatherBot)));
     private Dictionary<string, JsonElement> ExtractClassnameWithJsonInitializers()
     {
-        using var file = File.Open(ConfigurationFilePath, FileMode.Open, FileAccess.Read);
         // extract the class name and the initializer object as json
-        var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(file);
+        var result = deserializer.Deserialize<Dictionary<string, JsonElement>>(ConfigurationFilePath);
         if (result is null)
         {
-            Console.WriteLine("Unknown error parsing configuration file");
-            return [];
+            throw new Exception("Unknown error parsing configuration file");
         }
         return result;
+    }
+    private WeatherBot? CreateFromJson(JsonElement json, Type botType)
+    {
+        WeatherBot? bot = (WeatherBot?) deserializer.Deserialize(json, botType, JsonOptions);
+        bot?.SetLogger(logger);
+        return bot;
     }
     public List<WeatherBot> GetBotsFromConfiguration()
     {
@@ -36,13 +43,13 @@ class ConfigurationReader(string ConfigurationFilePath)
             Type? type = botTypes.Value.FirstOrDefault(type => type.Name.Equals(botClass, StringComparison.InvariantCultureIgnoreCase));
             if (type is null)
             {
-                Console.WriteLine($"Warning: Not recognized bot type \"{botClass}\", skipping entry...");
+                logger.WriteLine($"Warning: Not recognized bot type \"{botClass}\", skipping entry...");
                 continue;
             }
-            WeatherBot? bot = (WeatherBot?) JsonSerializer.Deserialize(json, type, JsonOptions);
+            WeatherBot? bot = CreateFromJson(json, type);
             if (bot is null)
             {
-                Console.WriteLine($"Warning: unable to create {botClass} from configuration file, skipping entry...");
+                logger.WriteLine($"Warning: unable to create {botClass} from configuration file, skipping entry...");
                 continue;
             }
             res.Add(bot);
